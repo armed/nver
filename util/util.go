@@ -27,7 +27,6 @@ func FatalError(format string, a ...interface{}) {
 
 func GetVersions() VersionList {
 	resp, err := http.Get(NODE_VERSIONS)
-
 	if err != nil {
 		FatalError(UNEXPECTED_ERR, err)
 	}
@@ -35,10 +34,9 @@ func GetVersions() VersionList {
 	if resp.StatusCode != 200 {
 		FatalError(LSR_RESP_ERR, resp.Status)
 	}
-
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
 
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		FatalError(LSR_ERR, err)
 	}
@@ -51,13 +49,11 @@ func GetDownloadUrl(ver *version) string {
 }
 
 func parseVersions(body []byte) VersionList {
-	versionStrings := bodyToVersionStrings(body)
-
 	versions := NewVersionList()
 
+	versionStrings := bodyToVersionStrings(body)
 	for _, vs := range versionStrings {
 		success, tokens := tokensFromVersionString(vs)
-
 		if success {
 			versions.Add(tokens[0], tokens[1])
 		}

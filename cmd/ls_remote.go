@@ -7,9 +7,7 @@ import (
 )
 
 func lsRemote(c *cli.Context) {
-
 	versions := util.GetVersions()
-
 	for _, v := range versions.Vers() {
 		fmt.Println(*v)
 	}

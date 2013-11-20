@@ -45,11 +45,9 @@ func Init() {
 
 	if workDirPath == "" {
 		u, err := user.Current()
-
 		if err != nil {
 			util.FatalError("Could not get current user information")
 		}
-
 		workDirPath = u.HomeDir + DEFAULT_DIR
 	}
 

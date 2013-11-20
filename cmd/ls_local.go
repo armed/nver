@@ -11,7 +11,6 @@ import (
 
 func lsLocal(c *cli.Context) {
 	vers, err := ioutil.ReadDir(conf.VersionsPath())
-
 	if err != nil {
 		log.Fatal("Could not read versions directory")
 	}

@@ -19,13 +19,11 @@ import (
 
 func install(c *cli.Context) {
 	ver := strings.ToLower(c.Args()[0])
-
 	if ver == "" {
 		log.Fatalf("No Node.js version specified")
 	}
 
 	success, bestMatch := util.GetVersions().FindBest(ver)
-
 	if !success {
 		log.Fatalf("Could not find matched Node.js version")
 	}
@@ -38,9 +36,7 @@ func install(c *cli.Context) {
 	}
 
 	verDirPath := conf.VersionsPath() + "/" + strings.Split(path.Base(u.Path), "-")[1]
-
 	err = os.Mkdir(verDirPath, os.ModeDir|os.ModePerm)
-
 	if os.IsExist(err) {
 		log.Fatalf("Version %v is already installed", ver)
 	}
@@ -64,9 +60,7 @@ func download(urlStr string) io.Reader {
 	defer response.Body.Close()
 
 	gzBuff := new(bytes.Buffer)
-
 	io.Copy(gzBuff, response.Body)
-
 	return gzBuff
 }
 
@@ -75,9 +69,7 @@ func unzip(gzBuff io.Reader) io.Reader {
 	gz, _ := gzip.NewReader(gzBuff)
 
 	tarBuff := new(bytes.Buffer)
-
 	io.Copy(tarBuff, gz)
-
 	return tarBuff
 }
 
@@ -92,7 +84,6 @@ func untar(tar *tar.Reader, path string) {
 		}
 
 		info := hdr.FileInfo()
-
 		name := stripRoot(info.Name())
 
 		if info.IsDir() {
@@ -100,11 +91,12 @@ func untar(tar *tar.Reader, path string) {
 			untar(tar, path)
 		} else {
 			file, err := os.Create(path + name)
-
 			if err != nil {
 				log.Fatalf("Could not create file %v", name)
 			}
+
 			file.Chmod(info.Mode())
+
 			if _, err := io.Copy(file, tar); err != nil {
 				log.Fatalf("Could not write file %v: %v", name, err)
 			}
