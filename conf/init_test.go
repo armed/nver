@@ -1,5 +1,0 @@
-package conf
-
-import (
-	"testing"
-)
