@@ -4,16 +4,21 @@ import "github.com/codegangsta/cli"
 
 var Commands = []cli.Command{
 	{
-		Name:      "ls-remote",
-		ShortName: "lsr",
-		Usage:     "List all available Note.js versions",
-		Action:    lsRemote,
-	},
-	{
 		Name:      "install",
 		ShortName: "i",
 		Usage:     "Install specific Note.js version",
 		Action:    install,
+	},
+	{
+		Name:   "use",
+		Usage:  "Create symlink for specific Note.js version",
+		Action: use,
+	},
+	{
+		Name:      "ls-remote",
+		ShortName: "lsr",
+		Usage:     "List all available Note.js versions",
+		Action:    lsRemote,
 	},
 	{
 		Name:   "ls",
