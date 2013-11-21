@@ -21,14 +21,7 @@ import (
 
 func install(c *cli.Context) {
 	ver := strings.ToLower(c.Args()[0])
-	if ver == "" {
-		log.Fatalf("No Node.js version specified")
-	}
-
-	success, bestMatch := util.GetVersions().FindBest(ver)
-	if !success {
-		log.Fatalf("Could not find matched Node.js version")
-	}
+	bestMatch := util.VersionFromString(ver)
 
 	urlStr := util.GetDownloadUrl(bestMatch)
 

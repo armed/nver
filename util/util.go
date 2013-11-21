@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"runtime"
@@ -46,6 +45,17 @@ func GetVersions() VersionList {
 
 func GetDownloadUrl(ver *version) string {
 	return makeUrl(ver, runtime.GOOS, runtime.GOARCH)
+}
+
+func VersionFromString(ver string) (bestMatch *version) {
+	if ver == "" {
+		log.Fatalf("No Node.js version specified")
+	}
+	success, bestMatch := GetVersions().FindBest(ver)
+	if !success {
+		log.Fatalf("Could not find matched Node.js version")
+	}
+	return
 }
 
 func parseVersions(body []byte) VersionList {
