@@ -2,6 +2,7 @@ package util
 
 import (
 	"io/ioutil"
+	"log"
 	"net/http"
 	"runtime"
 	"strings"
@@ -20,24 +21,20 @@ var archs = map[string]string{
 	"386":   "x86",
 }
 
-func FatalError(format string, a ...interface{}) {
-	panic(fmt.Errorf(format, a))
-}
-
 func GetVersions() VersionList {
 	resp, err := http.Get(NODE_VERSIONS)
 	if err != nil {
-		FatalError(UNEXPECTED_ERR, err)
+		log.Fatalf(UNEXPECTED_ERR, err)
 	}
 
 	if resp.StatusCode != 200 {
-		FatalError(LSR_RESP_ERR, resp.Status)
+		log.Fatalf(LSR_RESP_ERR, resp.Status)
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		FatalError(LSR_ERR, err)
+		log.Fatalf(LSR_ERR, err)
 	}
 
 	return parseVersions(body)

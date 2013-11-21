@@ -1,6 +1,7 @@
 package util
 
 import (
+	"log"
 	"strconv"
 	"strings"
 )
@@ -61,7 +62,7 @@ func NewVersion(node, npm string) *version {
 	minor, err := strconv.Atoi(mmp[1])
 
 	if err != nil {
-		FatalError("Could not parse version %v", node)
+		log.Fatalf("Could not parse version %v", node)
 	}
 
 	stable := minor%2 == 0
