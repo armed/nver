@@ -10,10 +10,12 @@ import (
 	"github.com/codegangsta/cli"
 	"io"
 	"log"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 )
 
@@ -53,14 +55,43 @@ func install(c *cli.Context) {
 
 func download(urlStr string) io.Reader {
 	fmt.Println("Downloading...")
+
 	response, err := http.Get(urlStr)
 	if err != nil {
 		log.Fatalf("Error while downloading %v: %v", urlStr, err)
 	}
 	defer response.Body.Close()
 
+	length, err := strconv.Atoi(response.Header["Content-Length"][0])
+	if err != nil {
+		length = 0
+	}
+
+	return writeAndLogChunks(length, response.Body)
+}
+
+func writeAndLogChunks(length int, src io.Reader) io.Reader {
 	gzBuff := new(bytes.Buffer)
-	io.Copy(gzBuff, response.Body)
+	buf := make([]byte, 32*1024)
+	total := 0.0
+	for {
+		nr, er := src.Read(buf)
+		if nr > 0 {
+			gzBuff.Write(buf[0:nr])
+			total += float64(nr)
+
+			if length > 0 {
+				fmt.Printf("%v%%\r", math.Floor(total/float64(length)*100))
+			}
+		}
+		if er == io.EOF {
+			break
+		}
+		if er != nil {
+			log.Fatal(er)
+		}
+	}
+	fmt.Println()
 	return gzBuff
 }
 
