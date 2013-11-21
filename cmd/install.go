@@ -20,14 +20,18 @@ import (
 )
 
 func install(c *cli.Context) {
+	validateArgsNum(c.Args(), 1)
 	ver := strings.ToLower(c.Args()[0])
-	bestMatch := util.VersionFromString(ver)
-
+	availableVerions := util.GetVersions()
+	success, bestMatch := availableVerions.FindBest(ver)
+	if !success {
+		log.Fatalf("Could not find matched version %v", ver)
+	}
 	urlStr := util.GetDownloadUrl(bestMatch)
 
 	u, err := url.Parse(urlStr)
 	if err != nil {
-		log.Fatalf("Could acquire download URL %v", err)
+		log.Fatalf("Could parse download URL %v", err)
 	}
 
 	verDirPath := conf.VersionsPath() + "/" + strings.Split(path.Base(u.Path), "-")[1]
@@ -39,16 +43,15 @@ func install(c *cli.Context) {
 		log.Fatalf("Could not create version directory %v", err)
 	}
 
+	fmt.Printf("Downloading %v...\n", bestMatch)
 	tarBuff := tar.NewReader(unzip(download(urlStr)))
 	untar(tarBuff, verDirPath)
 
-	fmt.Printf("Version %v successifully installed\n", ver)
-	fmt.Printf("Run 'nver use %v' command to start using it\n", ver)
+	fmt.Printf("Version %v successifully installed\n", bestMatch)
+	fmt.Printf("Run 'nver use %v' command to start using it\n", bestMatch)
 }
 
 func download(urlStr string) io.Reader {
-	fmt.Println("Downloading...")
-
 	response, err := http.Get(urlStr)
 	if err != nil {
 		log.Fatalf("Error while downloading %v: %v", urlStr, err)

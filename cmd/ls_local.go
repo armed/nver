@@ -3,25 +3,33 @@ package cmd
 import (
 	"fmt"
 	"github.com/armed/nver/conf"
+	"github.com/armed/nver/util"
 	"github.com/codegangsta/cli"
 	"io/ioutil"
 	"log"
-	"strings"
 )
 
 func lsLocal(c *cli.Context) {
-	vers, err := ioutil.ReadDir(conf.VersionsPath())
-	if err != nil {
-		log.Fatal("Could not read versions directory")
-	}
+	vList := installedVersions()
 
-	if len(vers) > 0 {
-		for _, v := range vers {
-			if strings.HasPrefix(v.Name(), "v") {
-				fmt.Println(v.Name())
-			}
+	if vList.Count() > 0 {
+		for _, v := range vList.Vers() {
+			fmt.Println(v)
 		}
 	} else {
 		fmt.Println("No installed Node.js versions")
 	}
+}
+
+func installedVersions() (vList util.VersionList) {
+	vers, err := ioutil.ReadDir(conf.VersionsPath())
+	if err != nil {
+		log.Fatal("Could not read versions directory")
+	}
+	vList = util.NewVersionList()
+
+	for _, v := range vers {
+		vList.Add(v.Name())
+	}
+	return
 }
