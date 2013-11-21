@@ -1,7 +1,7 @@
 nver
 ====
 
-Yet another Node.js version manager written on Go language
+Yet another Node.js version manager written in Go language
 
 ### Usage
 
