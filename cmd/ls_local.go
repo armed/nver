@@ -9,8 +9,8 @@ import (
 	"log"
 )
 
-func lsLocal(c *cli.Context) {
-	vList := installedVersions()
+func LsLocal(c *cli.Context) {
+	vList := lsLocal(conf.Get())
 
 	if vList.Count() > 0 {
 		for _, v := range vList.Vers() {
@@ -21,8 +21,8 @@ func lsLocal(c *cli.Context) {
 	}
 }
 
-func installedVersions() (vList util.VersionList) {
-	vers, err := ioutil.ReadDir(conf.VersionsPath())
+func lsLocal(c conf.Configuration) (vList util.VersionList) {
+	vers, err := ioutil.ReadDir(c.VersionsPath())
 	if err != nil {
 		log.Fatal("Could not read versions directory")
 	}

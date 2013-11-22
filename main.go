@@ -2,13 +2,16 @@ package main
 
 import (
 	"github.com/armed/nver/cmd"
-	"github.com/armed/nver/conf"
 	"github.com/codegangsta/cli"
+	"log"
 	"os"
+	"runtime"
 )
 
 func main() {
-	conf.Init()
+	if runtime.GOOS != "darwin" && runtime.GOOS != "linux" {
+		log.Fatalf("Sorry, nver currently supports only Mac OS X and Linux")
+	}
 
 	app := cli.NewApp()
 	app.Name = "nver"

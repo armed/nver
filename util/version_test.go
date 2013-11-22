@@ -33,7 +33,7 @@ func TestVersionList(t *testing.T) {
 			})
 		})
 		C("be created nonempty from []string with func NewVersionListFromSlice", func() {
-			// 5 valid versions, 2 invalid
+			// 5 valid entries, 2 invalid
 			strs := []string{
 				"v0.10.16",
 				"v0.10.17",
@@ -65,6 +65,5 @@ func TestVersionList(t *testing.T) {
 			So(success, ShouldBeTrue)
 			So(bestMatch, ShouldEqual, "v0.10.21")
 		})
-
 	})
 }

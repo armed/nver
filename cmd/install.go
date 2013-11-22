@@ -19,9 +19,12 @@ import (
 	"strings"
 )
 
-func install(c *cli.Context) {
+func Install(c *cli.Context) {
 	validateArgsNum(c.Args(), 1)
-	ver := strings.ToLower(c.Args()[0])
+	install(util.CheckVersionArgument(c.Args()[0]), conf.Get())
+}
+
+func install(ver string, c conf.Configuration) {
 	availableVerions := util.GetVersions()
 	success, bestMatch := availableVerions.FindBest(ver)
 	if !success {
@@ -34,7 +37,7 @@ func install(c *cli.Context) {
 		log.Fatalf("Could parse download URL %v", err)
 	}
 
-	verDirPath := conf.VersionsPath() + "/" + strings.Split(path.Base(u.Path), "-")[1]
+	verDirPath := c.VersionsPath() + "/" + strings.Split(path.Base(u.Path), "-")[1]
 	err = os.Mkdir(verDirPath, os.ModeDir|os.ModePerm)
 	if os.IsExist(err) {
 		log.Fatalf("Version %v is already installed", ver)
@@ -100,9 +103,9 @@ func unzip(gzBuff io.Reader) io.Reader {
 	return tarBuff
 }
 
-func untar(tar *tar.Reader, path string) {
+func untar(t *tar.Reader, rootPath string) {
 	for {
-		hdr, err := tar.Next()
+		hdr, err := t.Next()
 		if err == io.EOF {
 			return
 		}
@@ -114,19 +117,25 @@ func untar(tar *tar.Reader, path string) {
 		name := stripRoot(info.Name())
 
 		if info.IsDir() {
-			os.MkdirAll(path+name, os.ModeDir|os.ModePerm)
-			untar(tar, path)
-		} else {
-			file, err := os.Create(path + name)
+			os.MkdirAll(rootPath+name, os.ModeDir|os.ModePerm)
+			untar(t, rootPath)
+		} else if hdr.Typeflag == tar.TypeSymlink {
+			err := os.Symlink(rootPath+path.Dir(name)+"/"+hdr.Linkname, rootPath+name)
 			if err != nil {
-				log.Fatalf("Could not create file %v", name)
+				log.Fatalf("Could not create symlink %v -> %v: %v", hdr.Linkname, name, err)
+			}
+		} else {
+			file, err := os.Create(rootPath + name)
+			if err != nil {
+				log.Fatalf("Could not create file %v: %v", name, err)
 			}
 
 			file.Chmod(info.Mode())
-
-			if _, err := io.Copy(file, tar); err != nil {
+			if _, err := io.Copy(file, t); err != nil {
 				log.Fatalf("Could not write file %v: %v", name, err)
 			}
+
+			file.Close()
 		}
 	}
 }

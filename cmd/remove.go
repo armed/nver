@@ -9,18 +9,18 @@ import (
 	"os"
 )
 
-func Use(c *cli.Context) {
+func Remove(c *cli.Context) {
 	validateArgsNum(c.Args(), 1)
-	use(util.CheckVersionArgument(c.Args()[0]), conf.Get())
+	remove(util.CheckVersionArgument(c.Args()[0]), conf.Get())
 }
 
-func use(ver string, c conf.Configuration) {
+func remove(ver string, c conf.Configuration) {
 	vList := lsLocal(c)
 	success, bestMatch := vList.FindBest(ver)
 	if !success {
 		log.Fatalf("Could not find any match for %v, is it installed?", ver)
 	}
 	os.RemoveAll(c.BinPath())
-	os.Symlink(c.VersionsPath()+"/"+bestMatch+"/bin", c.BinPath())
-	fmt.Printf("Now using %v\n", bestMatch)
+	os.RemoveAll(c.VersionsPath() + "/" + bestMatch)
+	fmt.Printf("Removed %v, run install/use to start using another version\n", bestMatch)
 }
