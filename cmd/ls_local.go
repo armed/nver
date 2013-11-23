@@ -22,12 +22,14 @@ func LsLocal(c *cli.Context) {
 }
 
 func lsLocal(c conf.Configuration) (vList util.VersionList) {
-	vers, err := ioutil.ReadDir(c.VersionsPath())
+	vers, err := ioutil.ReadDir(c.WorkPath())
 	if err != nil {
 		log.Fatal("Could not read versions directory")
 	}
 	vList = util.NewVersionList()
-
+	if found, cur := c.CurrentVersion(); found {
+		vList.Add(cur + "*")
+	}
 	for _, v := range vers {
 		vList.Add(v.Name())
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	validVersionSting = regexp.MustCompile(`^([vV]{1}\d+\.\d+\.\d+(-[a-zA-Z]+-\d+)??){1}(\s+\d+\.\d+\.\d+(-[a-zA-Z]+-\d+)??)??$`)
+	validVersionSting = regexp.MustCompile(`^([vV]{1}\d+\.\d+\.\d+(-[a-zA-Z]+-\d+)??){1}(\s+\d+\.\d+\.\d+(-[a-zA-Z]+-\d+)??)??\*??$`)
 	validArgVersion   = regexp.MustCompile(`^[vV]??\d+\.\d+(\.\d+)??$`)
 )
 

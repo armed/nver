@@ -37,7 +37,7 @@ func install(ver string, c conf.Configuration) {
 		log.Fatalf("Could parse download URL %v", err)
 	}
 
-	verDirPath := c.VersionsPath() + "/" + strings.Split(path.Base(u.Path), "-")[1]
+	verDirPath := c.WorkPath() + "/" + strings.Split(path.Base(u.Path), "-")[1]
 	err = os.Mkdir(verDirPath, os.ModeDir|os.ModePerm)
 	if os.IsExist(err) {
 		log.Fatalf("Version %v is already installed", ver)

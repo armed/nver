@@ -20,7 +20,6 @@ func remove(ver string, c conf.Configuration) {
 	if !success {
 		log.Fatalf("Could not find any match for %v, is it installed?", ver)
 	}
-	os.RemoveAll(c.BinPath())
-	os.RemoveAll(c.VersionsPath() + "/" + bestMatch)
+	os.RemoveAll(c.WorkPath() + "/" + bestMatch)
 	fmt.Printf("Removed %v, run install/use to start using another version\n", bestMatch)
 }
