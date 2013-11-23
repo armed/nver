@@ -120,7 +120,7 @@ func untar(t *tar.Reader, rootPath string) {
 			os.MkdirAll(rootPath+name, os.ModeDir|os.ModePerm)
 			untar(t, rootPath)
 		} else if hdr.Typeflag == tar.TypeSymlink {
-			err := os.Symlink(rootPath+path.Dir(name)+"/"+hdr.Linkname, rootPath+name)
+			err := os.Symlink(hdr.Linkname, rootPath+name)
 			if err != nil {
 				log.Fatalf("Could not create symlink %v -> %v: %v", hdr.Linkname, name, err)
 			}
