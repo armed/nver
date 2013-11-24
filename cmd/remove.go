@@ -7,6 +7,7 @@ import (
 	"github.com/codegangsta/cli"
 	"log"
 	"os"
+	"strings"
 )
 
 func Remove(c *cli.Context) {
@@ -20,6 +21,11 @@ func remove(ver string, c conf.Configuration) {
 	if !success {
 		log.Fatalf("Could not find any match for %v, is it installed?", ver)
 	}
-	os.RemoveAll(c.WorkPath() + "/" + bestMatch)
-	fmt.Printf("Removed %v, run install/use to start using another version\n", bestMatch)
+	if strings.HasSuffix(bestMatch, "*") {
+		fmt.Printf("Removed %v, run install/use to start using another version\n", bestMatch)
+		os.RemoveAll(c.WorkPath() + "/current")
+	} else {
+		fmt.Printf("Removed %v", bestMatch)
+		os.RemoveAll(c.WorkPath() + "/" + bestMatch)
+	}
 }
