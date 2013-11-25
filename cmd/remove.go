@@ -3,29 +3,24 @@ package cmd
 import (
 	"fmt"
 	"github.com/armed/nver/conf"
-	"github.com/armed/nver/util"
 	"github.com/codegangsta/cli"
 	"log"
 	"os"
-	"strings"
 )
 
-func Remove(c *cli.Context) {
-	validateArgsNum(c.Args(), 1)
-	remove(util.CheckVersionArgument(c.Args()[0]), conf.Get())
-}
-
-func remove(ver string, c conf.Configuration) {
-	vList := lsLocal(c)
-	success, bestMatch := vList.FindBest(ver)
-	if !success {
-		log.Fatalf("Could not find any match for %v, is it installed?", ver)
+func Remove(context *cli.Context) {
+	validateArgsNum(context.Args(), 1)
+	verArg := context.Args()[0]
+	c := conf.Get()
+	result, err := findVersionFolder(verArg, c)
+	if err != nil {
+		log.Fatal(err)
 	}
-	if strings.HasSuffix(bestMatch, "*") {
-		fmt.Printf("Removed %v, run install/use to start using another version\n", bestMatch)
-		os.RemoveAll(c.WorkPath() + "/current")
+	os.RemoveAll(c.WorkPath() + result.path)
+	if result.isCurrent {
+		fmt.Printf("Removed currently used version %v, run 'nve use' to switch to another version",
+			result.version)
 	} else {
-		fmt.Printf("Removed %v", bestMatch)
-		os.RemoveAll(c.WorkPath() + "/" + bestMatch)
+		fmt.Printf("Removed version %v", result.version)
 	}
 }

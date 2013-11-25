@@ -21,14 +21,14 @@ import (
 
 func Install(c *cli.Context) {
 	validateArgsNum(c.Args(), 1)
-	install(util.CheckVersionArgument(c.Args()[0]), conf.Get())
+	install(c.Args()[0], conf.Get())
 }
 
 func install(ver string, c conf.Configuration) {
 	availableVerions := util.GetVersions()
-	success, bestMatch := availableVerions.FindBest(ver)
-	if !success {
-		log.Fatalf("Could not find matched version %v", ver)
+	bestMatch, err := availableVerions.FindNewest(ver)
+	if err != nil {
+		log.Fatal(err)
 	}
 	urlStr := util.GetDownloadUrl(bestMatch)
 
