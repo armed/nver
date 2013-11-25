@@ -1,6 +1,8 @@
 package conf
 
 import (
+	"github.com/armed/nver/util"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -21,11 +23,13 @@ var instance *configuration
 type Configuration interface {
 	WorkPath() string
 	CurrentVersion() (bool, string)
+	util.VersionList
 }
 
 type configuration struct {
-	workDir string
-	current string
+	workPath string
+	current  string
+	util.VersionList
 }
 
 func Get() Configuration {
@@ -39,17 +43,27 @@ func Get() Configuration {
 			wp = u.HomeDir + DEFAULT_DIR
 		}
 		checkDir(wp)
-		instance = &configuration{workDir: wp}
+		instance = &configuration{workPath: wp}
+		instance.VersionList = util.NewVersionList()
 
 		if out, err := exec.Command(wp+"/current/bin/node", "-v").Output(); err == nil {
 			instance.current = strings.TrimSpace(string(out))
+			instance.VersionList.Add(instance.current + "*")
+		}
+
+		infos, err := ioutil.ReadDir(instance.workPath)
+		if err != nil {
+			log.Fatalln("Could not read versions directory")
+		}
+		for _, fi := range infos {
+			instance.VersionList.Add(fi.Name())
 		}
 	})
 	return instance
 }
 
 func (conf *configuration) WorkPath() string {
-	return conf.workDir
+	return conf.workPath
 }
 
 func (conf *configuration) CurrentVersion() (bool, string) {
