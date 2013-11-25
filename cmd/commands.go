@@ -11,7 +11,7 @@ var Commands = []cli.Command{
 	},
 	{
 		Name:   "use",
-		Usage:  "Create symlink for specific Note.js version",
+		Usage:  "Set specified Note.js version as current",
 		Action: Use,
 	},
 	{
