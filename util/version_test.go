@@ -47,7 +47,7 @@ func TestVersionList(t *testing.T) {
 			So(vl.Count(), ShouldEqual, 5)
 			So(vl.Vers()[4], ShouldEqual, "v0.11.8")
 		})
-		C("find best matched version from it's list", func() {
+		C("find", func() {
 			strs := []string{
 				"v0.10.20",
 				"v0.10.21",
@@ -56,14 +56,23 @@ func TestVersionList(t *testing.T) {
 				"v0.11.6",
 				"v0.11.2",
 			}
-			vl := NewVersionListFromSlice(strs)
-			success, bestMatch := vl.FindBest("0.11")
-			So(success, ShouldBeTrue)
-			So(bestMatch, ShouldEqual, "v0.11.7")
-
-			success, bestMatch = vl.FindBest("0.10")
-			So(success, ShouldBeTrue)
-			So(bestMatch, ShouldEqual, "v0.10.21")
+			C("newest version", func() {
+				vl := NewVersionListFromSlice(strs)
+				bestMatch, err := vl.FindNewest("0.11")
+				So(err, ShouldBeNil)
+				So(bestMatch, ShouldEqual, "v0.11.7")
+			})
+			C("exact version", func() {
+				vl := NewVersionListFromSlice(strs)
+				bestMatch, err := vl.FindExact("0.11.2")
+				So(err, ShouldBeNil)
+				So(bestMatch, ShouldEqual, "v0.11.2")
+			})
+			C("panic FindExact when version is not full", func() {
+				vl := NewVersionListFromSlice(strs)
+				_, err := vl.FindExact("0.11")
+				So(err, ShouldEqual, ErrorFullVersionMustBeSpecified)
+			})
 		})
 	})
 }
