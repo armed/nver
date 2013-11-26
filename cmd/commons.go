@@ -20,16 +20,14 @@ func validateArgsNum(args []string, num int) {
 
 func findVersionFolder(verArg string, vList util.VersionList) (result *searchResults, err error) {
 	bestMatch, err := vList.FindExact(verArg)
-	if err != nil {
-		return
+	if err == nil {
+		result = &searchResults{}
+		result.version = bestMatch
+		if result.isCurrent = strings.HasSuffix(bestMatch, "*"); result.isCurrent {
+			result.path = "/current"
+		} else {
+			result.path = "/" + bestMatch
+		}
 	}
-
-	result = &searchResults{}
-	result.version = bestMatch
-	if result.isCurrent = strings.HasSuffix(bestMatch, "*"); result.isCurrent {
-		result.path = "/current"
-	} else {
-		result.path = "/" + bestMatch
-	}
-	return result, err
+	return
 }
