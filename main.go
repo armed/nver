@@ -16,7 +16,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "nver"
 	app.Version = "0.0.3"
-	app.Usage = "Manage your Node.js versions"
+	app.Usage = "Manage your current Node.js version"
 	app.Commands = cmd.Commands
 	app.Run(os.Args)
 }
