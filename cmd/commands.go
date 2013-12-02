@@ -31,4 +31,9 @@ var Commands = []cli.Command{
 		Usage:  "List all installed Node.js versions",
 		Action: LsLocal,
 	},
+	{
+		Name:   "copy",
+		Usage:  "Copy all global installed modules from one version to another",
+		Action: Copy,
+	},
 }
